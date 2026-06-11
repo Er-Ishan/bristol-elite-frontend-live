@@ -1,0 +1,31 @@
+/* Mobile / tablet: calendar picker matches template date field styling */
+@media (max-width: 991px) {
+    .pricing-quotes-search .search-car__input-box .react-datepicker-wrapper,
+    .search-car__input-box .react-datepicker-wrapper.parking-date-picker,
+    .search-car__input-box .parking-date-picker {
+        width: 100%;
+        display: block;
+    }
+
+    .pricing-quotes-search .search-car__input-box .react-datepicker-wrapper input,
+    .search-car__input-box .parking-date-picker input,
+    .search-car__input-box .react-datepicker-wrapper input {
+        height: 50px;
+        width: 100%;
+        background-color: transparent;
+        border: 1px solid rgba(var(--gorent-black-rgb), 0.1);
+        border-radius: 25px;
+        padding-left: 20px;
+        padding-right: 20px;
+        outline: none;
+        font-size: 16px;
+        font-weight: 400;
+        color: var(--gorent-gray);
+        display: block;
+        cursor: pointer;
+    }
+
+    .react-datepicker-popper {
+        z-index: 9999 !important;
+    }
+}

@@ -1,0 +1,185 @@
+import React from 'react';
+import { motion } from "framer-motion"
+// import { Link } from 'react-router';
+
+// Images
+// import taglineShape from '../../assets/images/shapes/section-title-tagline-shape-1.png';
+import aboutImg1 from '../../assets/images/resources/brs-img-3.jpg';
+import aboutImg2 from '../../assets/images/resources/brs-img.webp';
+import aboutImg3 from '../../assets/images/resources/bristol_airport_image_sign.png';
+// import AdvanceCountUp from '../../components/elements/AdvanceCountUp';
+import TextAnimation from '../../components/elements/TextAnimation';
+import HeaderThree from './HeaderThree';
+import Footer from '../common/Footer';
+import Banner from '../common/Banner';
+
+const AboutDetails: React.FC = () => {
+    return (
+        <><HeaderThree></HeaderThree>
+        <Banner breadcrumb='About Us' />
+        <section className="about-three" id='about'>
+            <div className="container">
+                <div className="row">
+                    {/* Left Side */}
+                    <div className="col-xl-6">
+                        <motion.div
+                            initial={{ x: -100, opacity: 0 }}
+                            whileInView={{ x: 0, opacity: 1 }}
+                            transition={{
+                                duration: 1.2,
+                                ease: "easeOut"
+                            }}
+                            viewport={{ amount: 0.1, once: true }}
+                            className="about-three__left">
+                            <div className="section-title text-left sec-title-animation animation-style1">
+                                <div className="section-title__tagline-box">
+                                  
+                                    <span className="section-title__tagline">
+                                        About Bristol Airport Parking
+                                    </span>
+                                </div>
+                                <h2 className="section-title__title title-animation">
+                                    <TextAnimation text='Parking Made Easy' />
+                                    <TextAnimation text='Secure & Affordable' />
+                                </h2>
+                            </div>
+
+                            <p className="about-three__text-1">
+                                We provide secure, affordable, and convenient airport parking
+                                solutions for travelers. Book your parking space online in minutes
+                                and enjoy stress-free airport transfers with 24/7 customer support.
+                            </p>
+
+                            <div className="about-three__points-box">
+                                <ul className="list-unstyled about-three__points">
+                                    <li>
+                                        <div className="icon">
+                                            <span className="icon-car-insurance text-white"></span>
+                                        </div>
+                                        <div className="content">
+                                            <h3>Secure Airport Parking</h3>
+                                            <p>
+                                                Safe and monitored airport parking spaces available
+                                                24/7 with CCTV security and easy terminal access.
+                                            </p>
+                                        </div>
+                                    </li>
+
+                                    <li>
+                                        <div className="icon">
+                                            <span className="icon-range text-white"></span>
+                                        </div>
+                                        <div className="content">
+                                            <h3>Quick Online Booking</h3>
+                                            <p>
+                                                Reserve your airport parking spot online in just a few
+                                                clicks with instant confirmation and flexible options.
+                                            </p>
+                                        </div>
+                                    </li>
+
+                                    <li>
+                                        <div className="icon">
+                                            <span className="icon-range text-white"></span>
+                                        </div>
+                                        <div className="content">
+                                            <h3>Secure Parking</h3>
+                                            <p>
+                                                Reserve your airport parking spot online with the security options.
+                                            </p>
+                                        </div>
+                                    </li>
+                                </ul>
+
+                                <div className="about-three__btn-box-and-call-box">
+                                    {/* <div className="about-three__btn-box ">
+                                        <Link
+                                            to="/"
+                                            className="about-three__btn thm-btn text-white"
+                                        >
+                                            Book Parking
+                                            <span className="fas fa-arrow-right text-white"></span>
+                                        </Link>
+                                    </div> */}
+
+                                    {/* <div className="about-three__call-box">
+                                        <div className="about-three__call-box-icon">
+                                            <span className="icon-call-2"></span>
+                                        </div>
+                                        <div className="about-three__call-box-content">
+                                            <p>Call to Anytime</p>
+                                            <h4>
+                                                <a href="tel:15502505260">
+                                                    +1 (550) 250 5260
+                                                </a>
+                                            </h4>
+                                        </div>
+                                    </div> */}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+
+                    {/* Right Side */}
+                    <div className="col-xl-6">
+                        <motion.div
+                            initial={{ x: 100, opacity: 0 }}
+                            whileInView={{ x: 0, opacity: 1 }}
+                            transition={{
+                                duration: 1.2,
+                                ease: "easeOut"
+                            }}
+                            viewport={{ amount: 0.1, once: true }}
+                            className="about-three__right wow slideInRight"
+                        >
+                            <div className="row">
+                                <div className="col-xl-6 col-lg-6 col-md-6">
+                                    <div className="about-three__img-box">
+                                        <div className="about-three__img-1">
+                                            <img src={aboutImg1} alt="About Image 1" />
+                                        </div>
+                                        <div className="about-three__img-2">
+                                            <img src={aboutImg2} alt="About Image 2" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="col-xl-6 col-lg-6 col-md-6">
+                                    <div className="about-three__satisfied-and-img">
+                                        <div className="about-three__satisfied-box">
+                                            <div className="icon">
+                                                <span className="icon-reviews text-white"></span>
+                                            </div>
+                                            <div className="about-three__count-box">
+                                                <div className="about-three__count count-box">
+                                                    <h3
+                                                        className="count-text text-white"
+                                                    >
+                                                        10000
+                                                    </h3>
+                                                </div>
+                                                <p className="about-three__count-text text-white">
+                                                    Happy Travelers
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="about-three__img-3">
+                                            <img src={aboutImg3} alt="About Image 3" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                    {/* End Right */}
+                </div>
+            </div>
+        </section>
+
+        <Footer></Footer>
+        </>
+    );
+};
+
+export default AboutDetails;
