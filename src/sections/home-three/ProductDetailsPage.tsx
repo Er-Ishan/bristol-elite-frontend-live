@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { IoIosCheckmarkCircle, IoIosCloseCircle } from "react-icons/io";
 import HeaderThree from "./HeaderThree";
@@ -7,6 +7,8 @@ import type { ParkingProduct, BookingLocationState } from "../../utils/parkingSe
 
 const FALLBACK_IMAGE =
     "https://blog.getmyparking.com/wp-content/uploads/2018/07/airport-parking-1.jpg";
+
+const CONTENT_BOX_HEIGHT = 420;
 
 interface ProductDetailsState {
     product: ParkingProduct;
@@ -27,7 +29,22 @@ const TABS: { key: TabKey; label: string }[] = [
 const ProductDetailsPage: React.FC = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<TabKey>("overview");
+    const [activeTabIndex, setActiveTabIndex] = useState(0);
+    const [width, setWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const onResize = () => setWidth(window.innerWidth);
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const isMobile = width < 768;
+    const isTablet = width >= 768 && width < 1024;
+    const isStacked = isMobile || isTablet;
+
+    const activeTab = TABS[activeTabIndex].key;
+    const goNext = () => setActiveTabIndex((i) => Math.min(i + 1, TABS.length - 1));
+    const goPrev = () => setActiveTabIndex((i) => Math.max(i - 1, 0));
 
     const pageState = state as ProductDetailsState | null;
 
@@ -112,17 +129,10 @@ const ProductDetailsPage: React.FC = () => {
                     background: "var(--gorent-base)",
                     padding: "28px 16px 22px",
                     textAlign: "center",
-                    marginBottom: "40px",
+                    marginBottom: "32px",
                 }}
             >
-                <h1
-                    style={{
-                        color: "#fff",
-                        fontSize: "clamp(20px, 4vw, 34px)",
-                        fontWeight: 700,
-                        margin: 0,
-                    }}
-                >
+                <h1 style={{ color: "#fff", fontSize: "clamp(20px, 4vw, 34px)", fontWeight: 700, margin: 0 }}>
                     {product.product_name}
                 </h1>
                 {product.service_type && (
@@ -137,84 +147,152 @@ const ProductDetailsPage: React.FC = () => {
                 style={{
                     maxWidth: "1200px",
                     margin: "0 auto",
-                    padding: "0 16px 60px",
+                    padding: isMobile ? "0 12px 40px" : "0 20px 60px",
                     display: "flex",
-                    gap: "28px",
+                    flexDirection: isStacked ? "column" : "row",
+                    gap: isMobile ? "20px" : "28px",
                     alignItems: "flex-start",
-                    flexWrap: "wrap",
                 }}
             >
-                {/* ── LEFT PANEL (Tabs + Content) ── */}
-                <div style={{ flex: "1 1 min(100%, 560px)", minWidth: 0 }}>
+                {/* ── LEFT PANEL ── */}
+                <div style={{ flex: isStacked ? "none" : "1 1 560px", width: isStacked ? "100%" : undefined, minWidth: 0 }}>
 
-                    {/* Tab Bar */}
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "8px",
-                            marginBottom: "16px",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        {TABS.map(({ key, label }) => (
+                    {/* Slider tab bar */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+
+                        <button
+                            onClick={goPrev}
+                            disabled={activeTabIndex === 0}
+                            style={{
+                                flexShrink: 0,
+                                width: "34px", height: "34px",
+                                border: "none",
+                                borderRadius: "50%",
+                                background: activeTabIndex === 0 ? "#e8e8e8" : "var(--gorent-base)",
+                                color: activeTabIndex === 0 ? "#bbb" : "#fff",
+                                cursor: activeTabIndex === 0 ? "not-allowed" : "pointer",
+                                fontSize: "18px", fontWeight: 700,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                transition: "all 0.2s",
+                            }}
+                        >‹</button>
+
+                        <div style={{ flex: 1, display: "flex", gap: "8px" }}>
+                            {TABS.map(({ key, label }, idx) => (
+                                <button
+                                    key={key}
+                                    onClick={() => setActiveTabIndex(idx)}
+                                    style={{
+                                        flex: "1 1 auto",
+                                        padding: isMobile ? "9px 8px" : "11px 14px",
+                                        border: `1.5px solid ${activeTab === key ? "var(--gorent-base)" : "#e3e3e3"}`,
+                                        borderRadius: "10px",
+                                        background: activeTab === key ? "var(--gorent-base)" : "#fff",
+                                        color: activeTab === key ? "#fff" : "var(--gorent-base)",
+                                        fontWeight: 600,
+                                        fontSize: isMobile ? "11px" : "13px",
+                                        cursor: "pointer",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        transition: "all 0.2s ease",
+                                        opacity: activeTab !== key ? 0.7 : 1,
+                                    }}
+                                >{label}</button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={goNext}
+                            disabled={activeTabIndex === TABS.length - 1}
+                            style={{
+                                flexShrink: 0,
+                                width: "34px", height: "34px",
+                                border: "none",
+                                borderRadius: "50%",
+                                background: activeTabIndex === TABS.length - 1 ? "#e8e8e8" : "var(--gorent-base)",
+                                color: activeTabIndex === TABS.length - 1 ? "#bbb" : "#fff",
+                                cursor: activeTabIndex === TABS.length - 1 ? "not-allowed" : "pointer",
+                                fontSize: "18px", fontWeight: 700,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                transition: "all 0.2s",
+                            }}
+                        >›</button>
+                    </div>
+
+                    {/* Dot indicators */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginBottom: "12px" }}>
+                        {TABS.map((_, idx) => (
                             <button
-                                key={key}
-                                onClick={() => setActiveTab(key)}
+                                key={idx}
+                                onClick={() => setActiveTabIndex(idx)}
                                 style={{
-                                    flex: "1 1 auto",
-                                    padding: "12px 16px",
-                                    border: `1px solid ${activeTab === key ? "var(--gorent-base)" : "#e3e3e3"}`,
-                                    borderRadius: "10px",
-                                    background: activeTab === key ? "var(--gorent-base)" : "#fff",
-                                    color: activeTab === key ? "#fff" : "var(--gorent-base)",
-                                    fontWeight: 600,
-                                    fontSize: "clamp(12px, 2vw, 14px)",
+                                    width: activeTabIndex === idx ? "22px" : "8px",
+                                    height: "8px",
+                                    borderRadius: "999px",
+                                    background: activeTabIndex === idx ? "var(--gorent-base)" : "#d0d0d0",
+                                    border: "none",
                                     cursor: "pointer",
-                                    transition: "all 0.2s ease",
-                                    whiteSpace: "nowrap",
+                                    padding: 0,
+                                    transition: "all 0.3s ease",
                                 }}
-                            >
-                                {label}
-                            </button>
+                            />
                         ))}
                     </div>
 
-                    {/* Tab Content Box */}
+                    {/* Content box — fixed height, scrollable */}
                     <div
                         style={{
-                            minHeight: "280px",
+                            height: `${CONTENT_BOX_HEIGHT}px`,
                             background: "#f8f9fa",
                             border: "1px solid #e8e8e8",
                             borderRadius: "14px",
-                            padding: "clamp(16px, 4vw, 28px)",
+                            overflow: "hidden",
+                            display: "flex",
+                            flexDirection: "column",
                         }}
                     >
-                        <h5
+                        <div
                             style={{
-                                fontWeight: 700,
-                                marginBottom: "16px",
-                                color: "var(--gorent-base)",
-                                fontSize: "17px",
+                                padding: "14px 20px 12px",
+                                borderBottom: "1px solid #e8e8e8",
+                                flexShrink: 0,
                             }}
                         >
-                            {tabContent[activeTab].heading}
-                        </h5>
+                            <h5 style={{ fontWeight: 700, margin: 0, color: "var(--gorent-base)", fontSize: "15px" }}>
+                                {tabContent[activeTab].heading}
+                            </h5>
+                        </div>
 
-                        {tabContent[activeTab].html ? (
-                            <div
-                                style={{ fontSize: "15px", lineHeight: "1.8", color: "#555" }}
-                                dangerouslySetInnerHTML={{ __html: tabContent[activeTab].html as string }}
-                            />
-                        ) : (
-                            <p style={{ fontSize: "15px", color: "#999" }}>
-                                No information available.
-                            </p>
-                        )}
+                        <div
+                            style={{
+                                flex: 1,
+                                overflowY: "auto",
+                                padding: "14px 20px 18px",
+                                scrollbarWidth: "thin",
+                                scrollbarColor: "var(--gorent-base) #e8e8e8",
+                            }}
+                        >
+                            {tabContent[activeTab].html ? (
+                                <div
+                                    style={{ fontSize: "14px", lineHeight: "1.8", color: "#555" }}
+                                    dangerouslySetInnerHTML={{ __html: tabContent[activeTab].html as string }}
+                                />
+                            ) : (
+                                <p style={{ fontSize: "14px", color: "#999" }}>No information available.</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* ── RIGHT PANEL (Booking Card) ── */}
-                <div style={{ flex: "1 1 300px", maxWidth: "400px", width: "100%" }}>
+                {/* ── RIGHT PANEL — natural height, no stretch ── */}
+                <div
+                    style={{
+                        width: isStacked ? "100%" : undefined,
+                        flexShrink: 0,
+                        flexBasis: isStacked ? undefined : "340px",
+                    }}
+                >
                     <div
                         style={{
                             background: "#fff",
@@ -224,49 +302,21 @@ const ProductDetailsPage: React.FC = () => {
                             boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                         }}
                     >
-                        {/* Product Image */}
-                        <div
-                            style={{
-                                padding: "20px",
-                                borderBottom: "1px solid #f0f0f0",
-                                textAlign: "center",
-                                background: "#fafafa",
-                            }}
-                        >
+                        {/* Image */}
+                        <div style={{ padding: "20px", borderBottom: "1px solid #f0f0f0", textAlign: "center", background: "#fafafa" }}>
                             <img
                                 src={product.image_data || FALLBACK_IMAGE}
                                 alt={product.product_name}
-                                style={{
-                                    maxHeight: "130px",
-                                    maxWidth: "100%",
-                                    objectFit: "contain",
-                                }}
+                                style={{ maxHeight: isMobile ? "100px" : "130px", maxWidth: "100%", objectFit: "contain" }}
                             />
                         </div>
 
-                        <div style={{ padding: "20px 24px 24px" }}>
+                        <div style={{ padding: "20px 20px 24px" }}>
 
                             {/* Badges */}
-                            <div
-                                style={{
-                                    display: "flex",
-                                    gap: "8px",
-                                    flexWrap: "wrap",
-                                    justifyContent: "center",
-                                    marginBottom: "18px",
-                                }}
-                            >
+                            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center", marginBottom: "16px" }}>
                                 {product.service_type && (
-                                    <span
-                                        style={{
-                                            background: "rgba(0, 92, 37, 0.08)",
-                                            color: "var(--gorent-base)",
-                                            padding: "5px 12px",
-                                            borderRadius: "999px",
-                                            fontSize: "12px",
-                                            fontWeight: 600,
-                                        }}
-                                    >
+                                    <span style={{ background: "rgba(0,92,37,0.08)", color: "var(--gorent-base)", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: 600 }}>
                                         <span className="fas fa-car" style={{ marginRight: "5px" }} />
                                         {product.service_type}
                                     </span>
@@ -274,87 +324,32 @@ const ProductDetailsPage: React.FC = () => {
                                 {product.nonflex && (
                                     <span
                                         style={{
-                                            background: product.nonflex === "Refundable"
-                                                ? "rgba(0, 92, 37, 0.08)"
-                                                : "#fff1f0",
-                                            color: product.nonflex === "Refundable"
-                                                ? "var(--gorent-base)"
-                                                : "#dc3545",
-                                            padding: "5px 12px",
-                                            borderRadius: "999px",
-                                            fontSize: "12px",
-                                            fontWeight: 600,
+                                            background: product.nonflex === "Refundable" ? "rgba(0,92,37,0.08)" : "#fff1f0",
+                                            color: product.nonflex === "Refundable" ? "var(--gorent-base)" : "#dc3545",
+                                            padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: 600,
                                         }}
-                                    >
-                                        {product.nonflex}
-                                    </span>
+                                    >{product.nonflex}</span>
                                 )}
                             </div>
 
-                            {/* Feature Points */}
+                            {/* Features */}
                             {features.length > 0 && (
-                                <ul
-                                    style={{
-                                        listStyle: "none",
-                                        padding: 0,
-                                        margin: "0 0 18px",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: "10px",
-                                    }}
-                                >
+                                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
                                     {features.map((feat, i) => (
-                                        <li
-                                            key={i}
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "flex-start",
-                                                gap: "10px",
-                                                fontSize: "14px",
-                                                lineHeight: "20px",
-                                                color: "#333",
-                                            }}
-                                        >
-                                            <IoIosCheckmarkCircle
-                                                size={18}
-                                                style={{ color: "var(--gorent-base)", flexShrink: 0, marginTop: "1px" }}
-                                            />
+                                        <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontSize: "13px", lineHeight: "20px", color: "#333" }}>
+                                            <IoIosCheckmarkCircle size={16} style={{ color: "var(--gorent-base)", flexShrink: 0, marginTop: "2px" }} />
                                             {feat}
                                         </li>
                                     ))}
-
-                                    {/* Status Row */}
                                     {product.status && (
-                                        <li
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "flex-start",
-                                                gap: "10px",
-                                                fontSize: "14px",
-                                                lineHeight: "20px",
-                                            }}
-                                        >
-                                            {product.status === "Active" ? (
-                                                <IoIosCheckmarkCircle
-                                                    size={18}
-                                                    style={{ color: "var(--gorent-base)", flexShrink: 0, marginTop: "1px" }}
-                                                />
-                                            ) : (
-                                                <IoIosCloseCircle
-                                                    size={18}
-                                                    style={{ color: "#dc3545", flexShrink: 0, marginTop: "1px" }}
-                                                />
-                                            )}
+                                        <li style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontSize: "13px", lineHeight: "20px" }}>
+                                            {product.status === "Active"
+                                                ? <IoIosCheckmarkCircle size={16} style={{ color: "var(--gorent-base)", flexShrink: 0, marginTop: "2px" }} />
+                                                : <IoIosCloseCircle size={16} style={{ color: "#dc3545", flexShrink: 0, marginTop: "2px" }} />
+                                            }
                                             <span>
                                                 <strong>Status:</strong>{" "}
-                                                <span
-                                                    style={{
-                                                        fontWeight: 600,
-                                                        color: product.status === "Active"
-                                                            ? "var(--gorent-base)"
-                                                            : "#dc3545",
-                                                    }}
-                                                >
+                                                <span style={{ fontWeight: 600, color: product.status === "Active" ? "var(--gorent-base)" : "#dc3545" }}>
                                                     {product.status}
                                                 </span>
                                             </span>
@@ -364,35 +359,14 @@ const ProductDetailsPage: React.FC = () => {
                             )}
 
                             {/* Price */}
-                            <div
-                                style={{
-                                    fontSize: "clamp(28px, 5vw, 36px)",
-                                    fontWeight: 800,
-                                    color: "var(--gorent-base)",
-                                    textAlign: "center",
-                                    marginBottom: "16px",
-                                    lineHeight: 1,
-                                }}
-                            >
+                            <div style={{ fontSize: "clamp(26px, 5vw, 34px)", fontWeight: 800, color: "var(--gorent-base)", textAlign: "center", marginBottom: "14px", lineHeight: 1 }}>
                                 £{Number(pricing || 0).toFixed(2)}
                             </div>
 
                             {/* Book Now */}
                             <button
                                 onClick={handleBookNow}
-                                style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    background: "var(--gorent-base)",
-                                    color: "#fff",
-                                    border: "none",
-                                    borderRadius: "10px",
-                                    fontWeight: 700,
-                                    fontSize: "16px",
-                                    cursor: "pointer",
-                                    marginBottom: "10px",
-                                    transition: "opacity 0.2s",
-                                }}
+                                style={{ width: "100%", padding: "14px", background: "var(--gorent-base)", color: "#fff", border: "none", borderRadius: "10px", fontWeight: 700, fontSize: "16px", cursor: "pointer", marginBottom: "10px", transition: "opacity 0.2s" }}
                             >
                                 Book Now
                             </button>
@@ -400,22 +374,10 @@ const ProductDetailsPage: React.FC = () => {
                             {/* Back */}
                             <button
                                 onClick={() => navigate(-1)}
-                                style={{
-                                    width: "100%",
-                                    padding: "13px",
-                                    background: "transparent",
-                                    color: "var(--gorent-base)",
-                                    border: "2px solid var(--gorent-base)",
-                                    borderRadius: "10px",
-                                    fontWeight: 600,
-                                    fontSize: "15px",
-                                    cursor: "pointer",
-                                    transition: "all 0.2s",
-                                }}
+                                style={{ width: "100%", padding: "13px", background: "transparent", color: "var(--gorent-base)", border: "2px solid var(--gorent-base)", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", transition: "all 0.2s" }}
                             >
                                 Back
                             </button>
-
                         </div>
                     </div>
                 </div>
