@@ -22,6 +22,7 @@ import ReceiptThree from './sections/home-three/ReceiptThree.tsx';
 import BookingDetailsThree from './sections/home-three/BookingDetailsThree.tsx';
 import RetryPaymentThree from './sections/home-three/RetryPaymentThree.tsx';
 import AirportProcedure from './sections/home-three/AirportProcedure.tsx';
+import ProductDetailsPage from './sections/home-three/ProductDetailsPage';
 
 import "react-datepicker/dist/react-datepicker.css";
 import Terms from './sections/home-three/Terms.tsx';
@@ -64,6 +65,7 @@ function AppRoutes() {
       <Route path='/faq' element={<Faq></Faq>}></Route>
       <Route path='/blog-data' element={<BlogThree></BlogThree>}></Route>
       <Route path='/airport-procedure' element={<AirportProcedure></AirportProcedure>}></Route>
+      <Route path='/product-details/:id' element={<ProductDetailsPage />}></Route>
       <Route path='/terms-condition' element={<Terms></Terms>}></Route>
       <Route path='/private-policy' element={<PrivatePolicy></PrivatePolicy>}></Route>
     </Routes>

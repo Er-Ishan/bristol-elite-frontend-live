@@ -2,7 +2,6 @@ import React from "react";
 import { motion } from "framer-motion"
 // section title shape
 // import sectionTitleShape from "../../assets/images/shapes/section-title-tagline-shape-1.png";
-import TextAnimation from "../../components/elements/TextAnimation";
 import { processSteps } from "../../all-content/process/processData";
 import type { ProcessStep } from "../../all-content/process/processType";
 import Footer from "../common/Footer";
